@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import gsap from 'gsap'
 
-//设置物体缩放 and  旋转
+//GSAP学习  自适应屏幕   阻尼
 
 // console.log(THREE,'THREE')
 
@@ -36,7 +37,34 @@ const cube = new THREE.Mesh(cubeGeometry, cubeMeshBasicMaterial);
 // cube.scale.x = 3
 
 // 旋转
-cube.rotation.set(Math.PI / 4, Math.PI / 2, Math.PI / 8, 'XZY')
+// cube.rotation.set(Math.PI / 4, Math.PI / 2, Math.PI / 8, 'XZY')
+
+// 设置动画
+
+var animate1 = gsap.to(cube.position, {
+    x: 5,
+    duration: 5,
+    ease: 'power1.inOut',
+    repeat: 2,  // 循环次数  无限循环-1
+    yoyo: true,  // 往返运动
+    delay: 2,   // 延迟2s运动
+    onComplete: () => { console.log('动画完成'); },
+    onStart: () => { console.log('动画开始'); },
+})
+gsap.to(cube.rotation, { x: 2 * Math.PI, duration: 5 })
+
+window.addEventListener('dblclick', () => {
+    console.log(animate1);
+    if (animate1.isActive()) {
+        // 暂停
+        animate1.pause()
+    } else {
+        // 恢复
+        animate1.resume()
+    }
+})
+
+
 
 
 
@@ -61,8 +89,10 @@ render.render(scene, camera)
 
 
 // 创建轨道控制器
-
 const controls = new OrbitControls(camera, render.domElement)
+
+// 设置阻尼 使控制器更有真实效果  必须在你的动画循环里调用.update()
+controls.enableDamping = true
 
 
 // 添加坐标轴辅助器
@@ -71,17 +101,26 @@ const axesHelper = new THREE.AxesHelper(5);
 scene.add(axesHelper);
 
 function rendeer(time) {
-    // // 旋转
-    // cube.rotation.x += 0.01
-    // // 移动
-    cube.position.x += 0.01
-    if (cube.position.x > 5) { cube.position.x = 0 }
-
-    // let t = (time / 1000) % 5
-    // cube.position.x = t * 1
+    controls.update()  //更新阻尼
     render.render(scene, camera);
     //  渲染下一帧的时候就会调用rendeer函数
     requestAnimationFrame(rendeer)
 }
 
 rendeer()
+
+
+// 监听画面变化  更新渲染
+
+window.addEventListener('resize', () => {
+    console.log('画面更新了');
+
+    // 1.更新摄像头
+    camera.aspect = window.innerWidth / window.innerHeight
+    // 2.更新摄像机的投影矩阵
+    camera.updateProjectionMatrix()
+    // 3.更新渲染器
+    render.setSize(window.innerWidth, window.innerHeight)
+    // 4.设置渲染器像素比
+    render.setPixelRatio(window.devicePixelRatio)
+})
