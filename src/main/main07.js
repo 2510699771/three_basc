@@ -1,8 +1,9 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+// 
 import gsap from 'gsap'
 
-// import * as dat from 'data.gui'
+import * as dat from 'dat.gui'
 
 // ui 控制组件
 
@@ -25,7 +26,7 @@ scene.add(camera)
 // 创建几何体
 // 添加物体
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
-const cubeMeshBasicMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+const cubeMeshBasicMaterial = new THREE.MeshBasicMaterial({ color: '#ffff00' })
 // 根据几何体和材质创建物体
 const cube = new THREE.Mesh(cubeGeometry, cubeMeshBasicMaterial);
 
@@ -43,17 +44,17 @@ const cube = new THREE.Mesh(cubeGeometry, cubeMeshBasicMaterial);
 
 // 设置动画
 
-var animate1 = gsap.to(cube.position, {
-    x: 5,
-    duration: 5,
-    ease: 'power1.inOut',
-    repeat: 2,  // 循环次数  无限循环-1
-    yoyo: true,  // 往返运动
-    delay: 2,   // 延迟2s运动
-    onComplete: () => { console.log('动画完成'); },
-    onStart: () => { console.log('动画开始'); },
-})
-gsap.to(cube.rotation, { x: 2 * Math.PI, duration: 5 })
+// var animate1 = gsap.to(cube.position, {
+//     x: 5,
+//     duration: 5,
+//     ease: 'power1.inOut',
+//     repeat: 2,  // 循环次数  无限循环-1
+//     yoyo: true,  // 往返运动
+//     delay: 2,   // 延迟2s运动
+//     onComplete: () => { console.log('动画完成'); },
+//     onStart: () => { console.log('动画开始'); },
+// })
+// gsap.to(cube.rotation, { x: 2 * Math.PI, duration: 5 })
 
 // 暂停 恢复
 // window.addEventListener('dblclick', () => {
@@ -71,6 +72,65 @@ gsap.to(cube.rotation, { x: 2 * Math.PI, duration: 5 })
 
 // 将几何体添加到场景
 scene.add(cube)
+
+
+
+
+// 初始化dat.Gui
+const gui = new dat.GUI()
+
+// 运动参数
+var animate2 = gsap.to(cube.position, {
+    x: 5,
+    duration: 2,
+    ease: 'power1.inOut',
+    repeat: -1,  // 循环次数  无限循环-1
+    yoyo: true,  // 往返运动
+    // delay: 2,   // 延迟2s运动
+    onComplete: () => { console.log('动画完成'); },
+    onStart: () => { console.log('动画开始'); },
+})
+animate2.pause()
+
+const params = {
+    color: '#ffff00',
+    // 立方体运动
+    fn: () => {
+        if (animate2.isActive()) {
+            // 暂停
+            animate2.pause()
+        } else {
+            // 恢复
+            animate2.resume()
+        }
+    }
+}
+
+// 设置移动
+gui.add(cube.position, 'x')
+    .min(0)
+    .max(5)
+    .step(0.01)
+    .name('移动x轴')
+    .onChange((value) => { console.log(value) })
+    .onFinishChange((value) => { console.log('完全停下来', value); })
+
+// 设置物体颜色
+gui.addColor(params, 'color').onChange((value) => {
+    console.log(value);
+    cube.material.color.set(value)
+}).name('物体颜色')
+
+// 设置物体显示/隐藏
+gui.add(cube, 'visible').name('是否显示')
+
+// 设置按钮点击触发某个事件
+gui.add(params, 'fn').name('点击立方体运动')
+
+// 设置立方体
+var folder = gui.addFolder('设置立方体')
+folder.add(cube.material, 'wireframe')
+
 
 
 
