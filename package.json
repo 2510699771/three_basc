@@ -13,7 +13,7 @@
     "parcel-bundler": "^1.12.5"
   },
   "dependencies": {
-    "dat.gui": "^0.7.9",
+    "dat.gui": "^0.7.6",
     "three": "^0.146.0"
   }
 }
