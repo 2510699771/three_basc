@@ -26,10 +26,14 @@ scene.add(camera)
 // 创建几何体
 // 添加物体
 const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+
+console.log(cubeGeometry, 'cubeGeometry');
+
 const cubeMeshBasicMaterial = new THREE.MeshBasicMaterial({ color: '#ffff00' })
 // 根据几何体和材质创建物体
 const cube = new THREE.Mesh(cubeGeometry, cubeMeshBasicMaterial);
 
+console.log(cube, 'cube')
 
 // 修改物体的位置
 // cube.position.set(5, 0, 0)
